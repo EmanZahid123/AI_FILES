@@ -1,0 +1,29 @@
+# Write your code here :-)
+def iterative_dfs(graph, start):
+    visited = set()
+    stack = [start]
+
+    while stack:
+        vertex = stack.pop()
+
+        if vertex not in visited:
+            visited.add(vertex)
+            print(vertex)  # You can process the node here
+
+            # Push unvisited neighbors onto the stack
+            stack.extend(neighbor for neighbor in graph[vertex] if neighbor not in visited)
+
+# Example usage:
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+starting_node = 'A'
+print("Iterative DFS starting from node", starting_node)
+iterative_dfs(graph, starting_node)
+#ACFBED
