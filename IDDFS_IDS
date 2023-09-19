@@ -1,0 +1,49 @@
+#Iterative Deepening Depth-First Search (IDDFS) is a combination of depth-first search (DFS) and breadth-first search (BFS) algorithms. It systematically increases the depth limit in a DFS manner until the target node is found.
+#We start with a depth limit of 0 and increment it in each iteration.
+#Within each iteration, we perform a depth-limited DFS using a stack and track the depth of each visited node.
+#If we find the target node within the specified depth limit, we return the depth.
+#If the target node is not found within the current depth limit, we increase the depth limit and continue the search.
+#Time: O(b^d) ,Space: O(d)
+def iddfs(graph, start, target):
+    depth_limit = 0
+
+    while True:
+        visited = set()
+        stack = [(start, 0)]
+
+        while stack:
+            node, depth = stack.pop()
+
+            if node == target:
+                return depth  # Target found, return the depth
+
+            if depth < depth_limit:
+                visited.add(node)
+                neighbors = graph[node]
+
+                for neighbor in neighbors:
+                    if neighbor not in visited:
+                        stack.append((neighbor, depth + 1))
+
+        depth_limit += 1  # Increase the depth limit for the next iteration
+
+    return None  # Target not found
+
+# Example usage:
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+starting_node = 'A'
+target_node = 'F'
+result = iddfs(graph, starting_node, target_node)
+
+if result is not None:
+    print(f"Path from {starting_node} to {target_node} found at depth {result}.")
+else:
+    print(f"No path found from {starting_node} to {target_node}.")
