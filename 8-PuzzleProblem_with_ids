@@ -1,0 +1,80 @@
+from collections import deque
+
+# Helper function to print the current state of the puzzle
+def print_puzzle(state):
+    for row in state:
+        print(row)
+    print()
+
+# Helper function to find the empty space (0) in the puzzle
+def find_empty_space(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+# Helper function to generate the next possible moves from the current state
+def generate_moves(state):
+    moves = []
+    i, j = find_empty_space(state)
+
+    # Possible moves: up, down, left, right
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    for di, dj in directions:
+        new_i, new_j = i + di, j + dj
+
+        if 0 <= new_i < 3 and 0 <= new_j < 3:
+            new_state = [list(row) for row in state]
+            new_state[i][j], new_state[new_i][new_j] = new_state[new_i][new_j], new_state[i][j]
+            moves.append(new_state)
+
+    return moves
+
+# Depth-First Search with Iterative Deepening
+def dfs_iterative_deepening(start_state, target_state, max_depth):
+    stack = deque([(start_state, 0)])
+    visited = set()
+
+    while stack:
+        state, depth = stack.pop()
+        visited.add(tuple(map(tuple, state)))
+
+        if state == target_state:
+            print("Goal state reached!")
+            print_puzzle(state)
+            return True
+
+        if depth < max_depth:
+            for move in generate_moves(state):
+                if tuple(map(tuple, move)) not in visited:
+                    stack.append((move, depth + 1))
+
+    return False
+
+# Example usage
+start_state = [
+    [1, 2, 3],
+    [0, 4, 6],
+    [7, 5, 8]
+]
+
+target_state = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 0]
+]
+
+max_depth = 10
+
+print("Starting state:")
+print_puzzle(start_state)
+
+print("Target state:")
+print_puzzle(target_state)
+
+print("Searching for solution...")
+found_solution = dfs_iterative_deepening(start_state, target_state, max_depth)
+
+if not found_solution:
+    print("No solution found within the specified depth limit.")
