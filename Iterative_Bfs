@@ -1,0 +1,27 @@
+# It uses queue.  It starts at the tree root and explores all nodes at the present depth prior to moving on to the nodes at the next depth level. Its space and time complexity is O(b^d).
+def iterative_dfs(graph, start):
+    visited = [start]
+    queue = [start]
+
+    while queue:
+        vertex = queue.pop(0)
+        print(vertex)
+        for neighbor in graph[vertex]:
+            if neighbor not in visited:
+                visited.append(neighbor)
+                queue.append(neighbor)
+
+# Example usage:
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+starting_node = 'A'
+print("Iterative DFS starting from node", starting_node)
+iterative_dfs(graph, starting_node)
+#ACFBED
