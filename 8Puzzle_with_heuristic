@@ -1,0 +1,109 @@
+import heapq
+import math
+
+# Helper function to print the current state of the puzzle
+def print_puzzle(state):
+    for row in state:
+        print(row)
+    print()
+# Helper function to find the empty space (0) in the puzzle
+def find_empty_space(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+# Helper function to calculate the Manhattan distance between two positions (i1, j1) and (i2, j2)
+def manhattan_distance(i1, j1, i2, j2):
+    return abs(i1 - i2) + abs(j1 - j2)
+    
+# Helper function to calculate the Euclidean distance between two positions (i1, j1) and (i2, j2)
+def euclidean_distance(i1, j1, i2, j2):
+    return math.sqrt((i1 - i2)**2 + (j1 - j2)**2)
+
+def find_target(tile,target_state):
+   for i in range(3):
+       for j in range(3):
+           if tile==target_state[i][j]:
+               return i,j
+
+
+# Helper function to calculate the heuristic (Manhattan distance) for a given state
+def calculate_heuristic(state, target_state):
+    heuristic = 0
+    for i in range(3):
+        for j in range(3):
+            tile = state[i][j]
+            if tile != 0:
+                target_i, target_j=find_target(tile,target_state)
+                #target_i, target_j = divmod(tile - 1, 3)
+                #divmod is for consecutive target state. You can simply form a function named findtarget to get target state indexes by
+                # passing it tile and target state
+
+                heuristic += manhattan_distance(i, j, target_i, target_j)
+                #heuristic += euclidean_distance(i, j, target_i, target_j)
+    return heuristic
+
+# Best First Search
+def best_first_search(start_state, target_state):
+    queue = [(0, start_state)]
+    visited = set()
+
+    while queue:
+        _,state = heapq.heappop(queue)
+        visited.add(tuple(map(tuple, state)))
+
+        if state == target_state:
+            print("Goal state reached!")
+            return state
+
+        for move in generate_moves(state):
+            if tuple(map(tuple, move)) not in visited:
+                priority = calculate_heuristic(move, target_state)
+                heapq.heappush(queue, (priority, move))
+
+    return None
+
+# Helper function to generate the next possible moves from the current state (same as in the previous code)
+def generate_moves(state):
+    moves = []
+    i, j = find_empty_space(state)
+
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+    for di, dj in directions:
+        new_i, new_j = i + di, j + dj
+
+        if 0 <= new_i < 3 and 0 <= new_j < 3:
+            new_state = [list(row) for row in state]
+            new_state[i][j], new_state[new_i][new_j] = new_state[new_i][new_j], new_state[i][j]
+            moves.append(new_state)
+
+    return moves
+
+# Example usage
+start_state = [
+    [1, 2, 3],
+    [0, 4, 6],
+    [7, 5, 8]
+]
+
+target_state = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 0]
+]
+
+print("Starting state:")
+print_puzzle(start_state)
+
+print("Target state:")
+print_puzzle(target_state)
+
+print("Searching for solution...")
+solution = best_first_search(start_state, target_state)
+
+if solution:
+    print("Solution found:")
+    print_puzzle(solution)
+else:
+    print("No solution found.")
